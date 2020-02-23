@@ -52,6 +52,21 @@ function dist-check() {
 # Check Operating System
 dist-check
 
+# Pre-Checks
+function check-apps() {
+  if ! [ -x "$(command -v curl)" ]; then
+    echo 'Error: curl is not installed, please install curl.' >&2
+    exit
+  fi
+  if ! [ -x "$(command -v ping)" ]; then
+    echo 'Error: ping is not installed, please install ping.' >&2
+    exit
+  fi
+}
+
+# Run the function and check for apps
+check-apps
+
 # Headless Install
 # Skips all questions and just get a client conf after install.
 function headless-install() {
@@ -178,11 +193,11 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "   1) 51820 (Recommended)"
     echo "   2) Custom (Advanced)"
     echo "   3) Random [1024-65535]"
-    until [[ "$PORT_CHOICE" =~ ^[1-3]$ ]]; do
-      read -rp "Port choice [1-3]: " -e -i 1 PORT_CHOICE
+    until [[ "$PORT_CHOICE_SETTINGS" =~ ^[1-3]$ ]]; do
+      read -rp "Port choice [1-3]: " -e -i 1 PORT_CHOICE_SETTINGS
     done
     # Apply port response
-    case $PORT_CHOICE in
+    case $PORT_CHOICE_SETTINGS in
     1)
       SERVER_PORT="51820"
       ;;
@@ -207,11 +222,11 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "   1) 25 (Default)"
     echo "   2) 0"
     echo "   3) Custom (Advanced)"
-    until [[ "$NAT_CHOICE" =~ ^[1-3]$ ]]; do
-      read -rp "Nat Choice [1-3]: " -e -i 1 NAT_CHOICE
+    until [[ "$NAT_CHOICE_SETTINGS" =~ ^[1-3]$ ]]; do
+      read -rp "Nat Choice [1-3]: " -e -i 1 NAT_CHOICE_SETTINGS
     done
     # Nat Choices
-    case $NAT_CHOICE in
+    case $NAT_CHOICE_SETTINGS in
     1)
       NAT_CHOICE="25"
       ;;
@@ -219,7 +234,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       NAT_CHOICE="0"
       ;;
     3)
-      until [[ "$NAT_CHOICE " =~ ^[0-9]+$ ]] && [ "$NAT_CHOICE " -ge 1 ] && [ "$NAT_CHOICE " -le 25 ]; do
+      until [[ "$NAT_CHOICE" =~ ^[0-9]+$ ]] && [ "$NAT_CHOICE" -ge 1 ] && [ "$NAT_CHOICE" -le 25 ]; do
         read -rp "Custom NAT [0-25]: " -e -i 25 NAT_CHOICE
       done
       ;;
@@ -235,10 +250,10 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "   1) 1280 (Recommended)"
     echo "   2) 1420"
     echo "   3) Custom (Advanced)"
-    until [[ "$MTU_CHOICE" =~ ^[1-3]$ ]]; do
-      read -rp "MTU choice [1-3]: " -e -i 1 MTU_CHOICE
+    until [[ "$MTU_CHOICE_SETTINGS" =~ ^[1-3]$ ]]; do
+      read -rp "MTU choice [1-3]: " -e -i 1 MTU_CHOICE_SETTINGS
     done
-    case $MTU_CHOICE in
+    case $MTU_CHOICE_SETTINGS in
     1)
       MTU_CHOICE="1280"
       ;;
@@ -261,10 +276,10 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "What IPv do you want to use to connect to WireGuard server?"
     echo "   1) IPv4 (Recommended)"
     echo "   2) IPv6 (Advanced)"
-    until [[ "$SERVER_HOST" =~ ^[1-2]$ ]]; do
-      read -rp "IP Choice [1-2]: " -e -i 1 SERVER_HOST
+    until [[ "$SERVER_HOST_SETTINGS" =~ ^[1-2]$ ]]; do
+      read -rp "IP Choice [1-2]: " -e -i 1 SERVER_HOST_SETTINGS
     done
-    case $SERVER_HOST in
+    case $SERVER_HOST_SETTINGS in
     1)
       SERVER_HOST="$SERVER_HOST_V4"
       ;;
@@ -283,31 +298,31 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "   1) No (Recommended)"
     echo "   2) IPV4"
     echo "   3) IPV6"
-    until [[ "$DISABLE_HOST" =~ ^[1-3]$ ]]; do
-      read -rp "Disable Host Choice [1-3]: " -e -i 1 DISABLE_HOST
+    until [[ "$DISABLE_HOST_SETTINGS" =~ ^[1-3]$ ]]; do
+      read -rp "Disable Host Choice [1-3]: " -e -i 1 DISABLE_HOST_SETTINGS
     done
-    case $DISABLE_HOST in
+    case $DISABLE_HOST_SETTINGS in
     1)
       DISABLE_HOST="$(
-        echo "net.ipv4.ip_forward=1" >>/etc/sysctl.d/wireguard.conf
-        echo "net.ipv6.conf.all.forwarding=1" >>/etc/sysctl.d/wireguard.conf
+        echo "net.ipv4.ip_forward=1" >/etc/sysctl.d/wireguard.conf
+        echo "net.ipv6.conf.all.forwarding=1" >/etc/sysctl.d/wireguard.conf
         sysctl --system
       )"
       ;;
     2)
       DISABLE_HOST="$(
-        echo "net.ipv4.conf.all.disable_ipv4=1" >>/etc/sysctl.d/wireguard.conf
-        echo "net.ipv4.conf.default.disable_ipv4=1" >>/etc/sysctl.d/wireguard.conf
-        echo "net.ipv6.conf.all.forwarding=1" >>/etc/sysctl.d/wireguard.conf
+        echo "net.ipv4.conf.all.disable_ipv4=1" >/etc/sysctl.d/wireguard.conf
+        echo "net.ipv4.conf.default.disable_ipv4=1" >/etc/sysctl.d/wireguard.conf
+        echo "net.ipv6.conf.all.forwarding=1" >/etc/sysctl.d/wireguard.conf
         sysctl --system
       )"
       ;;
     3)
       DISABLE_HOST="$(
-        echo "net.ipv6.conf.all.disable_ipv6 = 1" >>/etc/sysctl.d/wireguard.conf
-        echo "net.ipv6.conf.default.disable_ipv6 = 1" >>/etc/sysctl.d/wireguard.conf
-        echo "net.ipv6.conf.lo.disable_ipv6 = 1" >>/etc/sysctl.d/wireguard.conf
-        echo "net.ipv4.ip_forward=1" >>/etc/sysctl.d/wireguard.conf
+        echo "net.ipv6.conf.all.disable_ipv6 = 1" >/etc/sysctl.d/wireguard.conf
+        echo "net.ipv6.conf.default.disable_ipv6 = 1" >/etc/sysctl.d/wireguard.conf
+        echo "net.ipv6.conf.lo.disable_ipv6 = 1" >/etc/sysctl.d/wireguard.conf
+        echo "net.ipv4.ip_forward=1" >/etc/sysctl.d/wireguard.conf
         sysctl --system
       )"
       ;;
@@ -322,10 +337,10 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "What traffic do you want the client to forward to wireguard?"
     echo "   1) Everything (Recommended)"
     echo "   2) Exclude Private IPs (Allows LAN IP connections)"
-    until [[ "$CLIENT_ALLOWED_IP" =~ ^[1-2]$ ]]; do
-      read -rp "Client Allowed IP Choice [1-2]: " -e -i 1 CLIENT_ALLOWED_IP
+    until [[ "$CLIENT_ALLOWED_IP_SETTINGS" =~ ^[1-2]$ ]]; do
+      read -rp "Client Allowed IP Choice [1-2]: " -e -i 1 CLIENT_ALLOWED_IP_SETTINGS
     done
-    case $CLIENT_ALLOWED_IP in
+    case $CLIENT_ALLOWED_IP_SETTINGS in
     1)
       CLIENT_ALLOWED_IP="0.0.0.0/0,::/0"
       ;;
@@ -356,8 +371,8 @@ if [ ! -f "$WG_CONFIG" ]; then
       echo "   8) DNS.WATCH"
       echo "   9) Yandex Basic"
       echo "   10) Clean Browsing"
-      read -rp "DNS [1-10]: " -e -i 1 DNS_CHOICE
-      case $DNS_CHOICE in
+      read -rp "DNS [1-10]: " -e -i 1 CLIENT_DNS_SETTINGS
+      case $CLIENT_DNS_SETTINGS in
       1)
         CLIENT_DNS="176.103.130.130,176.103.130.131,2a00:5a60::ad1:0ff,2a00:5a60::ad2:0ff"
         ;;
@@ -398,7 +413,7 @@ if [ ! -f "$WG_CONFIG" ]; then
   # What would you like to name your first WireGuard peer?
   function client-name() {
     if [ "$CLIENT_NAME" == "" ]; then
-      echo "Lets name the WireGuard Peer, Only use words no special characters"
+      echo "Lets name the WireGuard Peer, Use one word only, no special characters. (No Spaces)"
       # shellcheck disable=SC2162
       read -p "Client name: " -e CLIENT_NAME
     fi
@@ -633,7 +648,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       fi
       if [ "$DISTRO" == "arch" ]; then
         pacman -Syu --noconfirm unbound resolvconf
-        rm /etc/unbound/unbound.conf
+        rm -f /etc/unbound/unbound.conf
         echo 'server:
     use-syslog: yes
     do-daemonize: no
@@ -661,7 +676,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       sed -i "s|nameserver|#nameserver|" /etc/resolv.conf
       sed -i "s|search|#search|" /etc/resolv.conf
       # Set localhost as the DNS resolver
-      echo "nameserver 127.0.0.1" >>/etc/resolv.conf
+      echo "nameserver 127.0.0.1" >/etc/resolv.conf
       # Restart unbound
       if pgrep systemd-journal; then
         if [[ $(service systemd-resolved status) ]]; then
@@ -702,12 +717,13 @@ PrivateKey = $SERVER_PRIVKEY
 PostUp = iptables -A FORWARD -i $WIREGUARD_PUB_NIC -j ACCEPT; iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -A FORWARD -i $WIREGUARD_PUB_NIC -j ACCEPT; ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; iptables -A INPUT -s $PRIVATE_SUBNET_V4 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
 PostDown = iptables -D FORWARD -i $WIREGUARD_PUB_NIC -j ACCEPT; iptables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -D FORWARD -i $WIREGUARD_PUB_NIC -j ACCEPT; ip6tables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; iptables -D INPUT -s $PRIVATE_SUBNET_V4 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
 SaveConfig = false
-# $CLIENT_NAME start
+  # $CLIENT_NAME start
 [Peer]
 PublicKey = $CLIENT_PUBKEY
 PresharedKey = $PRESHARED_KEY
 AllowedIPs = $CLIENT_ADDRESS_V4/32,$CLIENT_ADDRESS_V6/128
 # $CLIENT_NAME end" >$WG_CONFIG
+
     # shellcheck disable=SC2140
     echo "# $CLIENT_NAME
 [Interface]
@@ -720,13 +736,13 @@ AllowedIPs = $CLIENT_ALLOWED_IP
 Endpoint = $SERVER_HOST:$SERVER_PORT
 PersistentKeepalive = $NAT_CHOICE
 PresharedKey = $PRESHARED_KEY
-PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf
+PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf
     # Generate QR Code
     # shellcheck disable=SC2140
-    qrencode -t ansiutf8 -l L <"/etc/wireguard/clients"/"$CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf
+    qrencode -t ansiutf8 -l L <"/etc/wireguard/clients"/"$CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf
     # Echo the file
     # shellcheck disable=SC2140,SC2027,SC2086
-    echo "Client Config --> "/etc/wireguard/clients"/"$CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf"
+    echo "Client Config --> "/etc/wireguard/clients"/"$CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf"
     # Restart WireGuard
     if pgrep systemd-journal; then
       if [[ $(service systemd-resolved status) ]]; then
@@ -754,13 +770,14 @@ else
     echo "   1) Show WireGuard Interface"
     echo "   2) Start WireGuard Interface"
     echo "   3) Stop WireGuard Interface"
-    echo "   4) Add WireGuard Peer"
-    echo "   5) Remove WireGuard Peer"
-    echo "   6) Uninstall WireGuard Interface"
-    echo "   7) Update this script"
-    echo "   8) Exit"
-    until [[ "$WIREGUARD_OPTIONS" =~ ^[1-8]$ ]]; do
-      read -rp "Select an Option [1-8]: " -e -i 1 WIREGUARD_OPTIONS
+    echo "   4) Restart WireGuard Interface"
+    echo "   5) Add WireGuard Peer"
+    echo "   6) Remove WireGuard Peer"
+    echo "   7) Uninstall WireGuard Interface"
+    echo "   8) Update this script"
+    echo "   9) Exit"
+    until [[ "$WIREGUARD_OPTIONS" =~ ^[1-9]$ ]]; do
+      read -rp "Select an Option [1-9]: " -e -i 1 WIREGUARD_OPTIONS
     done
     case $WIREGUARD_OPTIONS in
     1)
@@ -797,7 +814,18 @@ else
       fi
       ;;
     4)
-      echo "Tell me a new name for the client config file. Use one word only, no special characters. (No Spaces)"
+      if pgrep systemd-journal; then
+        if [[ $(service systemd-resolved status) ]]; then
+          systemctl restart wg-quick@$WIREGUARD_PUB_NIC
+        fi
+      else
+        if [[ $(systemctl status systemd-resolved) ]]; then
+          service wg-quick@$WIREGUARD_PUB_NIC restart
+        fi
+      fi
+      ;;
+    5)
+      echo "Lets name the WireGuard Peer, Use one word only, no special characters. (No Spaces)"
       read -rp "New client name: " -e NEW_CLIENT_NAME
       CLIENT_PRIVKEY=$(wg genkey)
       CLIENT_PUBKEY=$(echo "$CLIENT_PRIVKEY" | wg pubkey)
@@ -821,7 +849,7 @@ else
 PublicKey = $CLIENT_PUBKEY
 PresharedKey = $PRESHARED_KEY
 AllowedIPs = $CLIENT_ADDRESS_V4/32,$CLIENT_ADDRESS_V6/128
-# $NEW_CLIENT_NAME end" >>$WG_CONFIG
+# $NEW_CLIENT_NAME end" >$WG_CONFIG
       # shellcheck disable=SC2140
       echo "# $NEW_CLIENT_NAME
 [Interface]
@@ -834,11 +862,11 @@ AllowedIPs = $CLIENT_ALLOWED_IP
 Endpoint = $SERVER_HOST$SERVER_PORT
 PersistentKeepalive = $NAT_CHOICE
 PresharedKey = $PRESHARED_KEY
-PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf
+PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf
       # shellcheck disable=SC2140
-      qrencode -t ansiutf8 -l L <"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf
+      qrencode -t ansiutf8 -l L <"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf
       # shellcheck disable=SC2140,SC2027,SC2086
-      echo "Client config --> "/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf"
+      echo "Client config --> "/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf"
       # Restart WireGuard
       if pgrep systemd-journal; then
         if [[ $(service systemd-resolved status) ]]; then
@@ -850,7 +878,7 @@ PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-$WIREGU
         fi
       fi
       ;;
-    5)
+    6)
       # Remove User
       echo "Which WireGuard User Do You Want To Remove?"
       # shellcheck disable=SC2002
@@ -875,7 +903,7 @@ PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-$WIREGU
       fi
       echo "Client named $REMOVECLIENT has been removed."
       ;;
-    6)
+    7)
       # Uninstall Wireguard and purging files
       # shellcheck disable=SC2034
       read -rp "Do you really want to remove Wireguard? [y/n]:" -e -i n REMOVE_WIREGUARD
@@ -897,23 +925,23 @@ PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-$WIREGU
           pacman -Rs wireguard qrencode haveged unbound unbound-host -y
         elif [ "$DISTRO" == "fedora" ]; then
           dnf remove wireguard qrencode haveged unbound unbound-host -y
-          rm /etc/yum.repos.d/wireguard.repo
+          rm -f /etc/yum.repos.d/wireguard.repo
         elif [ "$DISTRO" == "redhat" ]; then
           yum remove wireguard qrencode haveged unbound unbound-host -y
-          rm /etc/yum.repos.d/wireguard.repo
+          rm -f /etc/yum.repos.d/wireguard.repo
         fi
-        # Removing Wireguard Files
-        rm -rf /etc/wireguard
         # Removing Wireguard User Config Files
         rm -rf /etc/wireguard/clients
+        # Removing Wireguard Files
+        rm -rf /etc/wireguard
         # Removing system wireguard config
         rm -f /etc/sysctl.d/wireguard.conf
         # Removing wireguard config
         rm -f /etc/wireguard/$WIREGUARD_PUB_NIC.conf
-        # Removing Unbound Files
-        rm -rf /etc/unbound
         # Removing Unbound Config
         rm -f /etc/unbound/unbound.conf
+        # Removing Unbound Files
+        rm -rf /etc/unbound
         # Remove localhost as the resolver
         sed -i "s|nameserver 127.0.0.1||" /etc/resolv.conf
         # Going back to the old nameservers
@@ -921,13 +949,13 @@ PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-$WIREGU
         sed -i "s|#search|search|" /etc/resolv.conf
       fi
       ;;
-    7) ## Update the script
+    8) ## Update the script
       curl -o /etc/wireguard/wireguard-server.sh https://raw.githubusercontent.com/complexorganizations/wireguard-installer-manager/master/wireguard-server.sh
       sleep 3
       chmod +x /etc/wireguard/wireguard-server.sh
       bash /etc/wireguard/wireguard-server.sh
       ;;
-    8)
+    9)
       exit
       ;;
     esac
