@@ -219,7 +219,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       NAT_CHOICE="0"
       ;;
     3)
-      until [[ "$NAT_CHOICE" =~ ^[0-9]+$ ]] && [ "$NAT_CHOICE" -ge 1 ] && [ "$NAT_CHOICE" -le 25 ]; do
+      until [[ "$NAT_CHOICE " =~ ^[0-9]+$ ]] && [ "$NAT_CHOICE " -ge 1 ] && [ "$NAT_CHOICE " -le 25 ]; do
         read -rp "Custom NAT [0-25]: " -e -i 25 NAT_CHOICE
       done
       ;;
