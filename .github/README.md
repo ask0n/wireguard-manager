@@ -172,4 +172,4 @@ bash -x /etc/wireguard/wireguard-(server|client).sh >> /etc/wireguard/wireguard-
 
 ---
 ### License
-This project is under the [General Public License](https://raw.githubusercontent.com/complexorganizations/wireguard-install/master/.github/LICENSE)
+This project is under the [MIT](https://raw.githubusercontent.com/complexorganizations/wireguard-install/master/.github/LICENSE)
