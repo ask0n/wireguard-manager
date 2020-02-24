@@ -21,7 +21,7 @@ WireGuard is an extremely simple yet fast and modern VPN that utilizes state-of-
 ---
 ### Prerequisite
 - CentOS, Debian, Ubuntu, Arch, Fedora, Redhat, Raspbian
-- Linux ```Kernel 4.1``` or newer
+- Linux `Kernel 4.1` or newer
 - You will need root access or a user account with `sudo` privilege.
 
 ---
@@ -161,7 +161,7 @@ Channels:
 
 ### Debugging
 ```
-git clone https://github.com/complexorganizations/wireguard-installer-manager /etc/wireguard/
+git clone https://github.com/complexorganizations/wireguard-manager /etc/wireguard/
 bash -x /etc/wireguard/wireguard-(server|client).sh >> /etc/wireguard/wireguard-(server|client).log
 ```
 
