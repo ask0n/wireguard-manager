@@ -36,12 +36,10 @@ virt-check
 # Detect Operating System
 function dist-check() {
   DIST_CHECK="/etc/os-release"
-  # shellcheck disable=SC1090
   if [ -e $DIST_CHECK ]; then
-    # shellcheck disable=SC1091
+    # shellcheck disable=SC1090
     source $DIST_CHECK
     DISTRO=$ID
-    # shellcheck disable=SC2034
     VERSION=$VERSION_ID
   else
     echo "Your distribution is not supported (yet)."
@@ -418,8 +416,7 @@ if [ ! -f "$WG_CONFIG" ]; then
   function client-name() {
     if [ "$CLIENT_NAME" == "" ]; then
       echo "Lets name the WireGuard Peer, Use one word only, no special characters. (No Spaces)"
-      # shellcheck disable=SC2162
-      read -p "Client name: " -e CLIENT_NAME
+      read -rp "Client name: " -e CLIENT_NAME
     fi
   }
 
@@ -443,7 +440,6 @@ if [ ! -f "$WG_CONFIG" ]; then
       apt-get install linux-headers-"$(uname -r)" -y
       apt-get install wireguard qrencode haveged -y
     fi
-    # shellcheck disable=SC1117
     if [ "$DISTRO" == "debian" ]; then
       apt-get update
       echo "deb http://deb.debian.org/debian/ unstable main" >/etc/apt/sources.list.d/unstable.list
@@ -452,7 +448,6 @@ if [ ! -f "$WG_CONFIG" ]; then
       apt-get install linux-headers-"$(uname -r)" -y
       apt-get install wireguard qrencode haveged -y
     fi
-    # shellcheck disable=SC1117
     if [ "$DISTRO" == "raspbian" ]; then
       apt-get update
       apt-get install dirmngr -y
@@ -729,7 +724,6 @@ PresharedKey = $PRESHARED_KEY
 AllowedIPs = $CLIENT_ADDRESS_V4/32,$CLIENT_ADDRESS_V6/128
 # $CLIENT_NAME end" >$WG_CONFIG
 
-    # shellcheck disable=SC2140
     echo "# $CLIENT_NAME
 [Interface]
 Address = $CLIENT_ADDRESS_V4/$PRIVATE_SUBNET_MASK_V4,$CLIENT_ADDRESS_V6/$PRIVATE_SUBNET_MASK_V6
@@ -741,12 +735,10 @@ AllowedIPs = $CLIENT_ALLOWED_IP
 Endpoint = $SERVER_HOST:$SERVER_PORT
 PersistentKeepalive = $NAT_CHOICE
 PresharedKey = $PRESHARED_KEY
-PublicKey = $SERVER_PUBKEY" >/etc/wireguard/clients/$CLIENT_NAME-$WIREGUARD_PUB_NIC.conf
+PublicKey = $SERVER_PUBKEY" >/etc/wireguard/clients/"$CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf
     # Generate QR Code
-    # shellcheck disable=SC2140
-    qrencode -t ansiutf8 -l L </etc/wireguard/clients/$CLIENT_NAME-$WIREGUARD_PUB_NIC.conf
+    qrencode -t ansiutf8 -l L </etc/wireguard/clients/"$CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf
     # Echo the file
-    # shellcheck disable=SC2140,SC2027,SC2086
     echo "Client Config --> /etc/wireguard/clients/$CLIENT_NAME-$WIREGUARD_PUB_NIC.conf"
     # Restart WireGuard
     if pgrep systemd-journal; then
@@ -855,7 +847,6 @@ PublicKey = $CLIENT_PUBKEY
 PresharedKey = $PRESHARED_KEY
 AllowedIPs = $CLIENT_ADDRESS_V4/32,$CLIENT_ADDRESS_V6/128
 # $NEW_CLIENT_NAME end" >$WG_CONFIG
-      # shellcheck disable=SC2140
       echo "# $NEW_CLIENT_NAME
 [Interface]
 Address = $CLIENT_ADDRESS_V4/$PRIVATE_SUBNET_MASK_V4,$CLIENT_ADDRESS_V6/$PRIVATE_SUBNET_MASK_V6
@@ -867,10 +858,8 @@ AllowedIPs = $CLIENT_ALLOWED_IP
 Endpoint = $SERVER_HOST$SERVER_PORT
 PersistentKeepalive = $NAT_CHOICE
 PresharedKey = $PRESHARED_KEY
-PublicKey = $SERVER_PUBKEY" >/etc/wireguard/clients/$NEW_CLIENT_NAME-$WIREGUARD_PUB_NIC.conf
-      # shellcheck disable=SC2140
-      qrencode -t ansiutf8 -l L </etc/wireguard/clients/$NEW_CLIENT_NAME-$WIREGUARD_PUB_NIC.conf
-      # shellcheck disable=SC2140,SC2027,SC2086
+PublicKey = $SERVER_PUBKEY" >/etc/wireguard/clients/"$NEW_CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf
+      qrencode -t ansiutf8 -l L </etc/wireguard/clients/"$NEW_CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf
       echo "Client config --> /etc/wireguard/clients/$NEW_CLIENT_NAME-$WIREGUARD_PUB_NIC.conf"
       # Restart WireGuard
       if pgrep systemd-journal; then
@@ -892,10 +881,8 @@ PublicKey = $SERVER_PUBKEY" >/etc/wireguard/clients/$NEW_CLIENT_NAME-$WIREGUARD_
       read -rp "Are you sure you want to remove $REMOVECLIENT ? (y/n): " -n 1 -r
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo
-        # shellcheck disable=SC1117
         sed -i "/\# $REMOVECLIENT start/,/\# $REMOVECLIENT end/d" $WG_CONFIG
-        # shellcheck disable=SC2086
-        rm /etc/wireguard/clients/$REMOVECLIENT-$WIREGUARD_PUB_NIC.conf
+        rm /etc/wireguard/clients/"$REMOVECLIENT"-$WIREGUARD_PUB_NIC.conf
       fi
       if pgrep systemd-journal; then
         if [[ $(service systemd-resolved status) ]]; then
@@ -914,19 +901,19 @@ PublicKey = $SERVER_PUBKEY" >/etc/wireguard/clients/$NEW_CLIENT_NAME-$WIREGUARD_
       read -rp "Do you really want to remove Wireguard? [y/n]:" -e -i n REMOVE_WIREGUARD
       if [ "$REMOVE_WIREGUARD" = "y" ]; then
         # Stop WireGuard
-      if pgrep systemd-journal; then
-        if [[ $(service systemd-resolved status) ]]; then
-          systemctl disable wg-quick@$WIREGUARD_PUB_NIC
-          wg-quick down $WIREGUARD_PUB_NIC
-          systemctl stop unbound
+        if pgrep systemd-journal; then
+          if [[ $(service systemd-resolved status) ]]; then
+            systemctl disable wg-quick@$WIREGUARD_PUB_NIC
+            wg-quick down $WIREGUARD_PUB_NIC
+            systemctl stop unbound
+          fi
+        else
+          if [[ $(systemctl status systemd-resolved) ]]; then
+            service wg-quick@$WIREGUARD_PUB_NIC disable
+            wg-quick down $WIREGUARD_PUB_NIC
+            service unbound stop
+          fi
         fi
-      else
-        if [[ $(systemctl status systemd-resolved) ]]; then
-          service wg-quick@$WIREGUARD_PUB_NIC disable
-          wg-quick down $WIREGUARD_PUB_NIC
-          service unbound stop
-        fi
-      fi
         if [ "$DISTRO" == "centos" ]; then
           yum remove wireguard qrencode haveged unbound unbound-host -y
         elif [ "$DISTRO" == "debian" ]; then
