@@ -1,9 +1,9 @@
 ## Wireguard Manager
-[![GitHub release](https://img.shields.io/github/v/release/complexorganizations/wireguard-installer-manager)](https://github.com/complexorganizations/wireguard-install/releases)
-[![ShellCheck](https://github.com/complexorganizations/wireguard-installer-manager/workflows/ShellCheck/badge.svg)](https://github.com/complexorganizations/wireguard-install/actions)
-[![GitHub issues](https://img.shields.io/github/issues/complexorganizations/wireguard-installer-manager)](https://github.com/complexorganizations/wireguard-install/issues)
-[![GitHub contributors](https://img.shields.io/github/contributors/complexorganizations/wireguard-installer-manager)](https://github.com/complexorganizations/wireguard-install/graphs/contributors)
-[![GitHub forks](https://img.shields.io/github/forks/complexorganizations/wireguard-installer-manager?style=social)](https://github.com/complexorganizations/wireguard-install/fork)
+[![GitHub release](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/releases)
+[![ShellCheck](https://github.com/complexorganizations/wireguard-manager/workflows/ShellCheck/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions)
+[![GitHub issues](https://img.shields.io/github/issues/complexorganizations/wireguard-installer-manager)](https://github.com/complexorganizations/wireguard-manager/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/complexorganizations/wwireguard-manager)](https://github.com/complexorganizations/wireguard-manager/graphs/contributors)
+[![GitHub forks](https://img.shields.io/github/forks/complexorganizations/wireguard-manager?style=social)](https://github.com/complexorganizations/wireguard-manager/fork)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/complexorganizations/wireguard-manager/ShellCheck)](https://github.com/complexorganizations/wireguard-manager/actions)
 
 ---
@@ -28,7 +28,7 @@ WireGuard is an extremely simple yet fast and modern VPN that utilizes state-of-
 ### Installation
 Lets first use `curl` and save the file in `/etc/wireguard/`
 ```
-curl https://raw.githubusercontent.com/complexorganizations/wireguard-installer-manager/master/wireguard-server.sh --create-dirs -o /etc/wireguard/wireguard-server.sh
+curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/master/wireguard-server.sh --create-dirs -o /etc/wireguard/wireguard-server.sh
 ```
 Than lets make the script user executable (Optional)
 ```
@@ -153,7 +153,7 @@ Official Links
 ### Developing
 Using a browser based development environment:
 
-[![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/complexorganizations/wireguard-install)
+[![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/complexorganizations/wireguard-manager)
 
 Channels:
 - [Master](https://github.com/complexorganizations/wireguard-manager/tree/master) (Stable)
