@@ -262,7 +262,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       ;;
     3)
       until [[ "$MTU_CHOICE" =~ ^[0-9]+$ ]] && [ "$MTU_CHOICE" -ge 1 ] && [ "$MTU_CHOICE" -le 1500 ]; do
-        read -rp "Custom MTU [1-1500]: " -e -i 1500 MTU_CHOICE
+        read -rp "Custom MTU [1-1500]: " -e -i 1280 MTU_CHOICE
       done
       ;;
     esac
@@ -405,7 +405,7 @@ if [ ! -f "$WG_CONFIG" ]; then
         CLIENT_DNS="185.228.168.9,185.228.169.9,2a0d:2a00:1::2,2a0d:2a00:2::2"
         ;;
       11)
-        read -rp "Custom DNS Servers (IPv4, IPv6 Required):" -e -i "176.103.130.130,176.103.130.131,2a00:5a60::ad1:0ff,2a00:5a60::ad2:0ff" CLIENT_DNS
+        read -rp "Custom DNS Servers (IPv4, IPv6):" -e -i "176.103.130.130,176.103.130.131,2a00:5a60::ad1:0ff,2a00:5a60::ad2:0ff" CLIENT_DNS
         ;;
       esac
     fi
@@ -634,7 +634,6 @@ if [ ! -f "$WG_CONFIG" ]; then
         sed -i "s|use-caps-for-id: no|use-caps-for-id: yes|" /etc/unbound/unbound.conf
       fi
       if [ "$DISTRO" == "centos" ] && [ "$VERSION" == "7" ]; then
-        # Install Unbound
         yum install unbound unbound-libs resolvconf -y
         sed -i "s|# interface: 0.0.0.0$|interface: 10.8.0.1|" /etc/unbound/unbound.conf
         sed -i "s|# access-control: 127.0.0.0/8 allow|access-control: 10.8.0.1/24 allow|" /etc/unbound/unbound.conf
@@ -742,13 +741,13 @@ AllowedIPs = $CLIENT_ALLOWED_IP
 Endpoint = $SERVER_HOST:$SERVER_PORT
 PersistentKeepalive = $NAT_CHOICE
 PresharedKey = $PRESHARED_KEY
-PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf
+PublicKey = $SERVER_PUBKEY" >/etc/wireguard/clients/$CLIENT_NAME-$WIREGUARD_PUB_NIC.conf
     # Generate QR Code
     # shellcheck disable=SC2140
-    qrencode -t ansiutf8 -l L <"/etc/wireguard/clients"/"$CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf
+    qrencode -t ansiutf8 -l L </etc/wireguard/clients/$CLIENT_NAME-$WIREGUARD_PUB_NIC.conf
     # Echo the file
     # shellcheck disable=SC2140,SC2027,SC2086
-    echo "Client Config --> "/etc/wireguard/clients"/"$CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf"
+    echo "Client Config --> /etc/wireguard/clients/$CLIENT_NAME-$WIREGUARD_PUB_NIC.conf"
     # Restart WireGuard
     if pgrep systemd-journal; then
       if [[ $(service systemd-resolved status) ]]; then
@@ -868,11 +867,11 @@ AllowedIPs = $CLIENT_ALLOWED_IP
 Endpoint = $SERVER_HOST$SERVER_PORT
 PersistentKeepalive = $NAT_CHOICE
 PresharedKey = $PRESHARED_KEY
-PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf
+PublicKey = $SERVER_PUBKEY" >/etc/wireguard/clients/$NEW_CLIENT_NAME-$WIREGUARD_PUB_NIC.conf
       # shellcheck disable=SC2140
-      qrencode -t ansiutf8 -l L <"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf
+      qrencode -t ansiutf8 -l L </etc/wireguard/clients/$NEW_CLIENT_NAME-$WIREGUARD_PUB_NIC.conf
       # shellcheck disable=SC2140,SC2027,SC2086
-      echo "Client config --> "/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-"$WIREGUARD_PUB_NIC".conf"
+      echo "Client config --> /etc/wireguard/clients/$NEW_CLIENT_NAME-$WIREGUARD_PUB_NIC.conf"
       # Restart WireGuard
       if pgrep systemd-journal; then
         if [[ $(service systemd-resolved status) ]]; then
@@ -915,7 +914,19 @@ PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-"$WIREG
       read -rp "Do you really want to remove Wireguard? [y/n]:" -e -i n REMOVE_WIREGUARD
       if [ "$REMOVE_WIREGUARD" = "y" ]; then
         # Stop WireGuard
-        wg-quick down $WIREGUARD_PUB_NIC
+      if pgrep systemd-journal; then
+        if [[ $(service systemd-resolved status) ]]; then
+          systemctl disable wg-quick@$WIREGUARD_PUB_NIC
+          wg-quick down $WIREGUARD_PUB_NIC
+          systemctl stop unbound
+        fi
+      else
+        if [[ $(systemctl status systemd-resolved) ]]; then
+          service wg-quick@$WIREGUARD_PUB_NIC disable
+          wg-quick down $WIREGUARD_PUB_NIC
+          service unbound stop
+        fi
+      fi
         if [ "$DISTRO" == "centos" ]; then
           yum remove wireguard qrencode haveged unbound unbound-host -y
         elif [ "$DISTRO" == "debian" ]; then
@@ -969,4 +980,5 @@ PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-"$WIREG
 
   # Running Questions Command
   wireguard-next-questions
+
 fi
