@@ -1,8 +1,8 @@
 ## Wireguard Manager
 [![GitHub release](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/releases)
 [![ShellCheck](https://github.com/complexorganizations/wireguard-manager/workflows/ShellCheck/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions)
-[![GitHub issues](https://img.shields.io/github/issues/complexorganizations/wireguard-installer-manager)](https://github.com/complexorganizations/wireguard-manager/issues)
-[![GitHub contributors](https://img.shields.io/github/contributors/complexorganizations/wwireguard-manager)](https://github.com/complexorganizations/wireguard-manager/graphs/contributors)
+[![GitHub issues](https://img.shields.io/github/issues/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/graphs/contributors)
 [![GitHub forks](https://img.shields.io/github/forks/complexorganizations/wireguard-manager?style=social)](https://github.com/complexorganizations/wireguard-manager/fork)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/complexorganizations/wireguard-manager/ShellCheck)](https://github.com/complexorganizations/wireguard-manager/actions)
 
