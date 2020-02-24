@@ -55,11 +55,11 @@ dist-check
 # Pre-Checks
 function check-apps() {
   if ! [ -x "$(command -v curl)" ]; then
-    echo 'Error: curl is not installed, please install curl.' >&2
+    echo "Error: curl is not installed, please install curl." >&2
     exit
   fi
   if ! [ -x "$(command -v ping)" ]; then
-    echo 'Error: ping is not installed, please install ping.' >&2
+    echo "Error: ping is not installed, please install ping." >&2
     exit
   fi
 }
@@ -442,7 +442,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     if [ "$DISTRO" == "debian" ]; then
       apt-get update
       echo "deb http://deb.debian.org/debian/ unstable main" >/etc/apt/sources.list.d/unstable.list
-      printf 'Package: *\nPin: release a=unstable\nPin-Priority: 90\n' >/etc/apt/preferences.d/limit-unstable
+      printf "Package: *\nPin: release a=unstable\nPin-Priority: 90\n" >/etc/apt/preferences.d/limit-unstable
       apt-get update
       apt-get install linux-headers-"$(uname -r)" -y
       apt-get install wireguard qrencode haveged -y
@@ -452,7 +452,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       apt-get install dirmngr -y
       apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 04EE7237B7D453EC
       echo "deb http://deb.debian.org/debian/ unstable main" >/etc/apt/sources.list.d/unstable.list
-      printf 'Package: *\nPin: release a=unstable\nPin-Priority: 90\n' >/etc/apt/preferences.d/limit-unstable
+      printf "Package: *\nPin: release a=unstable\nPin-Priority: 90\n" >/etc/apt/preferences.d/limit-unstable
       apt-get update
       apt-get install raspberrypi-kernel-headers -y
       apt-get install wireguard qrencode haveged -y
@@ -463,13 +463,13 @@ if [ ! -f "$WG_CONFIG" ]; then
       pacman -Syu --noconfirm haveged qrencode iptables
       pacman -Syu --noconfirm wireguard-tools wireguard-arch
     fi
-    if [ "$DISTRO" = 'fedora' ] && [ "$VERSION" == "32" ]; then
+    if [ "$DISTRO" = "fedora" ] && [ "$VERSION" == "32" ]; then
       dnf update -y
       dnf install kernel-headers-"$(uname -r)" kernel-devel-"$(uname -r)" -y
       dnf install qrencode wireguard-tools haveged -y
     fi
     # shellcheck disable=SC2235
-    if [ "$DISTRO" = 'fedora' ] && ([ "$VERSION" == "30" ] || [ "$VERSION" == "31" ]); then
+    if [ "$DISTRO" = "fedora" ] && ([ "$VERSION" == "30" ] || [ "$VERSION" == "31" ]); then
       dnf update -y
       dnf copr enable jdoss/wireguard -y
       dnf install kernel-headers-"$(uname -r)" kernel-devel-"$(uname -r)" -y
@@ -523,7 +523,7 @@ if [ ! -f "$WG_CONFIG" ]; then
         # Install Unbound
         apt-get install unbound unbound-host e2fsprogs resolvconf -y
         # Set Config
-        echo 'server:
+        echo "server:
     num-threads: 4
     verbosity: 1
     root-hints: "/etc/unbound/root.hints"
@@ -546,7 +546,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     cache-max-ttl: 14400
     prefetch: yes
     qname-minimisation: yes
-    prefetch-key: yes' >/etc/unbound/unbound.conf
+    prefetch-key: yes" >/etc/unbound/unbound.conf
         # We need to disable this so unbound works on ubuntu.
         if pgrep systemd-journal; then
           if [[ $(service systemd-resolved status) ]]; then
@@ -564,7 +564,7 @@ if [ ! -f "$WG_CONFIG" ]; then
         # Install Unbound
         apt-get install unbound unbound-host e2fsprogs resolvconf -y
         # Set Config
-        echo 'server:
+        echo "server:
     num-threads: 4
     verbosity: 1
     root-hints: "/etc/unbound/root.hints"
@@ -587,13 +587,13 @@ if [ ! -f "$WG_CONFIG" ]; then
     cache-max-ttl: 14400
     prefetch: yes
     qname-minimisation: yes
-    prefetch-key: yes' >/etc/unbound/unbound.conf
+    prefetch-key: yes" >/etc/unbound/unbound.conf
       fi
       if [ "$DISTRO" == "raspbian" ]; then
         # Install Unbound
         apt-get install unbound unbound-host e2fsprogs resolvconf -y
         # Set Config
-        echo 'server:
+        echo "server:
     num-threads: 4
     verbosity: 1
     root-hints: "/etc/unbound/root.hints"
@@ -616,40 +616,40 @@ if [ ! -f "$WG_CONFIG" ]; then
     cache-max-ttl: 14400
     prefetch: yes
     qname-minimisation: yes
-    prefetch-key: yes' >/etc/unbound/unbound.conf
+    prefetch-key: yes" >/etc/unbound/unbound.conf
       fi
       if [ "$DISTRO" == "centos" ] && [ "$VERSION" == "8" ]; then
         yum install unbound unbound-libs -y
-        sed -i 's|# interface: 0.0.0.0$|interface: 10.8.0.1|' /etc/unbound/unbound.conf
-        sed -i 's|# access-control: 127.0.0.0/8 allow|access-control: 10.8.0.1/24 allow|' /etc/unbound/unbound.conf
-        sed -i 's|# interface: ::0$|interface: 127.0.0.1|' /etc/unbound/unbound.conf
-        sed -i 's|# hide-identity: no|hide-identity: yes|' /etc/unbound/unbound.conf
-        sed -i 's|# hide-version: no|hide-version: yes|' /etc/unbound/unbound.conf
-        sed -i 's|use-caps-for-id: no|use-caps-for-id: yes|' /etc/unbound/unbound.conf
+        sed -i "s|# interface: 0.0.0.0$|interface: 10.8.0.1|" /etc/unbound/unbound.conf
+        sed -i "s|# access-control: 127.0.0.0/8 allow|access-control: 10.8.0.1/24 allow|" /etc/unbound/unbound.conf
+        sed -i "s|# interface: ::0$|interface: 127.0.0.1|" /etc/unbound/unbound.conf
+        sed -i "s|# hide-identity: no|hide-identity: yes|" /etc/unbound/unbound.conf
+        sed -i "s|# hide-version: no|hide-version: yes|" /etc/unbound/unbound.conf
+        sed -i "s|use-caps-for-id: no|use-caps-for-id: yes|" /etc/unbound/unbound.conf
       fi
       if [ "$DISTRO" == "centos" ] && [ "$VERSION" == "7" ]; then
         # Install Unbound
         yum install unbound unbound-libs resolvconf -y
-        sed -i 's|# interface: 0.0.0.0$|interface: 10.8.0.1|' /etc/unbound/unbound.conf
-        sed -i 's|# access-control: 127.0.0.0/8 allow|access-control: 10.8.0.1/24 allow|' /etc/unbound/unbound.conf
-        sed -i 's|# interface: ::0$|interface: 127.0.0.1|' /etc/unbound/unbound.conf
-        sed -i 's|# hide-identity: no|hide-identity: yes|' /etc/unbound/unbound.conf
-        sed -i 's|# hide-version: no|hide-version: yes|' /etc/unbound/unbound.conf
-        sed -i 's|use-caps-for-id: no|use-caps-for-id: yes|' /etc/unbound/unbound.conf
+        sed -i "s|# interface: 0.0.0.0$|interface: 10.8.0.1|" /etc/unbound/unbound.conf
+        sed -i "s|# access-control: 127.0.0.0/8 allow|access-control: 10.8.0.1/24 allow|" /etc/unbound/unbound.conf
+        sed -i "s|# interface: ::0$|interface: 127.0.0.1|" /etc/unbound/unbound.conf
+        sed -i "s|# hide-identity: no|hide-identity: yes|" /etc/unbound/unbound.conf
+        sed -i "s|# hide-version: no|hide-version: yes|" /etc/unbound/unbound.conf
+        sed -i "s|use-caps-for-id: no|use-caps-for-id: yes|" /etc/unbound/unbound.conf
       fi
       if [ "$DISTRO" == "fedora" ]; then
         dnf install unbound unbound-host resolvconf -y
-        sed -i 's|# interface: 0.0.0.0$|interface: 10.8.0.1|' /etc/unbound/unbound.conf
-        sed -i 's|# access-control: 127.0.0.0/8 allow|access-control: 10.8.0.1/24 allow|' /etc/unbound/unbound.conf
-        sed -i 's|# interface: ::0$|interface: 127.0.0.1|' /etc/unbound/unbound.conf
-        sed -i 's|# hide-identity: no|hide-identity: yes|' /etc/unbound/unbound.conf
-        sed -i 's|# hide-version: no|hide-version: yes|' /etc/unbound/unbound.conf
-        sed -i 's|use-caps-for-id: no|use-caps-for-id: yes|' /etc/unbound/unbound.conf
+        sed -i "s|# interface: 0.0.0.0$|interface: 10.8.0.1|" /etc/unbound/unbound.conf
+        sed -i "s|# access-control: 127.0.0.0/8 allow|access-control: 10.8.0.1/24 allow|" /etc/unbound/unbound.conf
+        sed -i "s|# interface: ::0$|interface: 127.0.0.1|" /etc/unbound/unbound.conf
+        sed -i "s|# hide-identity: no|hide-identity: yes|" /etc/unbound/unbound.conf
+        sed -i "s|# hide-version: no|hide-version: yes|" /etc/unbound/unbound.conf
+        sed -i "s|use-caps-for-id: no|use-caps-for-id: yes|" /etc/unbound/unbound.conf
       fi
       if [ "$DISTRO" == "arch" ]; then
         pacman -Syu --noconfirm unbound resolvconf
         rm -f /etc/unbound/unbound.conf
-        echo 'server:
+        echo "server:
     use-syslog: yes
     do-daemonize: no
     username: "unbound"
@@ -666,7 +666,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     hide-identity: yes
     hide-version: yes
     qname-minimisation: yes
-    prefetch: yes' >/etc/unbound/unbound.conf
+    prefetch: yes" >/etc/unbound/unbound.conf
       fi
       # Set DNS Root Servers
       curl https://www.internic.net/domain/named.cache --create-dirs -o /etc/unbound/root.hints
@@ -914,13 +914,13 @@ PublicKey = $SERVER_PUBKEY" >"/etc/wireguard/clients"/"$NEW_CLIENT_NAME"-"$WIREG
           yum remove wireguard qrencode haveged unbound unbound-host -y
         elif [ "$DISTRO" == "debian" ]; then
           apt-get remove --purge wireguard qrencode haveged unbound unbound-host -y
-          sed -i 's|deb http://deb.debian.org/debian/ unstable main||' /etc/apt/sources.list.d/unstable.list
+          sed -i "s|deb http://deb.debian.org/debian/ unstable main||" /etc/apt/sources.list.d/unstable.list
         elif [ "$DISTRO" == "ubuntu" ]; then
           apt-get remove --purge wireguard qrencode haveged unbound unbound-host -y
         elif [ "$DISTRO" == "raspbian" ]; then
           apt-key del 04EE7237B7D453EC
           apt-get remove --purge wireguard qrencode haveged unbound unbound-host dirmngr -y
-          sed -i 's|deb http://deb.debian.org/debian/ unstable main||' /etc/apt/sources.list.d/unstable.list
+          sed -i "s|deb http://deb.debian.org/debian/ unstable main||" /etc/apt/sources.list.d/unstable.list
         elif [ "$DISTRO" == "arch" ]; then
           pacman -Rs wireguard qrencode haveged unbound unbound-host -y
         elif [ "$DISTRO" == "fedora" ]; then
