@@ -526,8 +526,8 @@ if [ ! -f "$WG_CONFIG" ]; then
         echo "server:
     num-threads: 4
     verbosity: 1
-    root-hints: "/etc/unbound/root.hints"
-    auto-trust-anchor-file: "/var/lib/unbound/root.key"
+    root-hints: /etc/unbound/root.hints
+    auto-trust-anchor-file: /var/lib/unbound/root.key
     interface: 0.0.0.0
     interface: ::0
     max-udp-size: 3072
@@ -567,8 +567,8 @@ if [ ! -f "$WG_CONFIG" ]; then
         echo "server:
     num-threads: 4
     verbosity: 1
-    root-hints: "/etc/unbound/root.hints"
-    auto-trust-anchor-file: "/var/lib/unbound/root.key"
+    root-hints: /etc/unbound/root.hints
+    auto-trust-anchor-file: /var/lib/unbound/root.key
     interface: 0.0.0.0
     interface: ::0
     max-udp-size: 3072
@@ -596,8 +596,8 @@ if [ ! -f "$WG_CONFIG" ]; then
         echo "server:
     num-threads: 4
     verbosity: 1
-    root-hints: "/etc/unbound/root.hints"
-    auto-trust-anchor-file: "/var/lib/unbound/root.key"
+    root-hints: /etc/unbound/root.hints
+    auto-trust-anchor-file: /var/lib/unbound/root.key
     interface: 0.0.0.0
     interface: ::0
     max-udp-size: 3072
