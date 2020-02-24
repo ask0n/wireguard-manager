@@ -1,4 +1,4 @@
-# Wireguard Manager
+## Wireguard Manager
 [![GitHub release](https://img.shields.io/github/v/release/complexorganizations/wireguard-installer-manager)](https://github.com/complexorganizations/wireguard-install/releases)
 [![ShellCheck](https://github.com/complexorganizations/wireguard-installer-manager/workflows/ShellCheck/badge.svg)](https://github.com/complexorganizations/wireguard-install/actions)
 [![GitHub issues](https://img.shields.io/github/issues/complexorganizations/wireguard-installer-manager)](https://github.com/complexorganizations/wireguard-install/issues)
@@ -6,42 +6,50 @@
 [![GitHub forks](https://img.shields.io/github/forks/complexorganizations/wireguard-installer-manager?style=social)](https://github.com/complexorganizations/wireguard-install/fork)
 
 ---
-**What is WireGuard?**
+### What is WireGuard?
+WireGuard is an extremely simple yet fast and modern VPN that utilizes state-of-the-art cryptography. It aims to be faster, simpler, leaner, and more useful than IPsec, while avoiding the massive headache. It intends to be considerably more performant than OpenVPN. WireGuard is designed as a general purpose VPN for running on embedded interfaces and super computers alike, fit for many different circumstances. Initially released for the Linux kernel, it is now cross-platform (Windows, macOS, BSD, iOS, Android) and widely deployable. It is currently under heavy development, but already it might be regarded as the most secure, easiest to use, and simplest VPN solution in the industry.
 
-[WireGuard](https://www.wireguard.com/) is an open-source VPN solution written in C by [Jason Donenfeld](https://www.jasondonenfeld.com), aiming to fix many of the problems that have plagued other modern server-to-server VPN offerings like IPSec/IKEv2, OpenVPN, or L2TP. It shares some similarities with other modern VPN offerings like [Tinc](https://www.tinc-vpn.org/) and [MeshBird](https://github.com/meshbird/meshbird), namely good cipher suites and minimal config. As of 2020-01 [it's been merged into the 5.6 version of the Linux kernel](https://arstechnica.com/gadgets/2020/01/linus-torvalds-pulled-wireguard-vpn-into-the-5-6-kernel-source-tree/), meaning it will ship with most Linux systems out-of-the-box.
-
-**WireGuard Goals**
+---
+### WireGuard Goals
  - strong, modern security by default
  - minimal config and key management
  - fast, both low-latency and high-bandwidth
  - simple internals and small protocol surface area
  - simple CLI and seamless integration with system networking
- 
-### Prerequisite 
+
+---
+### Prerequisite
 - CentOS, Debian, Ubuntu, Arch, Fedora, Redhat, Raspbian
-- Linux Kernel 4.1 or newer
+- Linux ```Kernel 4.1``` or newer
 - You will need root access or a user account with `sudo` privilege.
 
 ---
 ### Installation
-***Server Installation***
+Lets first use `curl` and save the file in `/etc/wireguard/`
 ```
 curl https://raw.githubusercontent.com/complexorganizations/wireguard-installer-manager/master/wireguard-server.sh --create-dirs -o /etc/wireguard/wireguard-server.sh
+```
+Than lets make the script user executable (Optional)
+```
+chmod +x /etc/wireguard/wireguard-server.sh
+```
+Its finally time to execute the script
+```
 bash /etc/wireguard/wireguard-server.sh
 ```
-
 In your `/etc/wireguard/clients` directory, you will have `.conf` files. These are the client configuration files. Download them from your WireGuard Interface and connect using your favorite WireGuard Peer.
 
 ---
 ### After Installation
-
 - Show WireGuard Interface
 - Start WireGuard Interface
 - Stop WireGuard Interface
+- Restart WireGuard Interface
 - Add WireGuard Peer
 - Remove WireGuard Peer
 - Uninstall WireGuard Interface
 - Update this script
+
 
 ---
 ### Features
@@ -56,18 +64,19 @@ In your `/etc/wireguard/clients` directory, you will have `.conf` files. These a
 
 ---
 ### Options
-* `PRIVATE_SUBNET_V4` - private subnet configuration, `10.8.0.0/24` by default
-* `PRIVATE_SUBNET_V6` - private subnet configuration, `fd42:42:42::0/64` by default
-* `SERVER_HOST_V4` - public IPv4 address, detected by default using `wget`
-* `SERVER_HOST_V6` - public IPv6 address, detected by default using `wget`
+* `PRIVATE_SUBNET_V4` - private IPv4 subnet configuration `10.8.0.0/24` by default
+* `PRIVATE_SUBNET_V6` - private IPv6 subnet configuration `fd42:42:42::0/64` by default
+* `SERVER_HOST_V4` - public IPv4 address, detected by default using `curl`
+* `SERVER_HOST_V6` - public IPv6 address, detected by default using `curl`
 * `SERVER_PUB_NIC` - public nig address, detected by default
 * `SERVER_PORT` - public port for wireguard server, default is `51820`
-* `DISABLE_HOST` - Disable or enable ipv4 and ipv6 
-* `CLIENT_ALLOWED_IP` - 
-* `NAT_CHOICE` - keep alive settings for wireguard client
-* `INSTALL_UNBOUND` - Install unbound settings
+* `DISABLE_HOST` - Disable or enable ipv4 and ipv6, default disabled
+* `CLIENT_ALLOWED_IP` - private or public IP range allowed in the tunnel
+* `NAT_CHOICE` - Keep sending packets to keep the tunnel alive `25`
+* `INSTALL_UNBOUND` - Install unbound settings `y/n`
+* `DNS_CHOICE` - Without Unbound you have to use a public dns like `8.8.8.8`
 * `CLIENT_NAME` - name of the client
-* `MTU_CHOICE` - the MTU the client will use to connect to DNS
+* `MTU_CHOICE` - the MTU the client will use to connect to DNS `1420`
 
 ---
 ### Compatibility with Linux Distro
@@ -94,8 +103,8 @@ In your `/etc/wireguard/clients` directory, you will have `.conf` files. These a
 | Arch            |:white_check_mark:  |:white_check_mark:  |:white_check_mark:  |:white_check_mark:  |:white_check_mark:  |
 | Raspbian        |:white_check_mark:  |:white_check_mark:  |:white_check_mark:  |:white_check_mark:  |:white_check_mark:  |
 | LXC             |:x:                 |:x:                 |:x:                 |:x:                 |:x:                 |
+| KVM             |:white_check_mark:  |:white_check_mark:  |:white_check_mark:  |:white_check_mark:  |:white_check_mark:  |
 | OpenVZ          |:x:                 |:x:                 |:x:                 |:x:                 |:x:                 |
-
 ### Compatibility with Cloud Providers
 | Cloud           | Supported          |
 | --------------  | ------------------ |
@@ -122,8 +131,8 @@ Which hosting provider do you recommend?
 
 Which WireGuard client do you recommend?
 - Windows: [WireGuard](https://www.wireguard.com/install/).
-- macOS: [WireGuard](https://apps.apple.com/us/app/wireguard/id1451685025).
 - Android: [WireGuard](https://play.google.com/store/apps/details?id=com.wireguard.android).
+- macOS: [WireGuard](https://apps.apple.com/us/app/wireguard/id1451685025).
 - iOS: [WireGuard](https://itunes.apple.com/us/app/wireguard/id1441195209).
 
 Is there WireGuard documentation?
@@ -132,29 +141,34 @@ Is there WireGuard documentation?
 How do i install wireguard without the questions? (Headless Install) ***Server Only***
 - ```HEADLESS_INSTALL=y /etc/wireguard/wireguard-server.sh```
 
-**Official Links**
+Official Links
 - Homepage: https://www.wireguard.com
 - Install: https://www.wireguard.com/install/
 - QuickStart: https://www.wireguard.com/quickstart/
-- Main Git repo: https://git.zx2c4.com/WireGuard/
-- Github Mirror: https://github.com/WireGuard/WireGuard
-- Mailing List: https://lists.zx2c4.com/mailman/listinfo/wireguard
+- Compiling: https://www.wireguard.com/compilation/
+- Whitepaper: https://www.wireguard.com/papers/wireguard.pdf
 
 ---
 ### Developing
-Use a browser based development environment:
+Using a browser based development environment:
 
 [![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/complexorganizations/wireguard-install)
 
-***Debugging***
+Channels:
+- [Master](https://github.com/complexorganizations/wireguard-manager/tree/master) (Stable)
+- [Dev](https://github.com/complexorganizations/wireguard-manager/tree/dev) (Development)
+
+### Debugging
 ```
 git clone https://github.com/complexorganizations/wireguard-installer-manager /etc/wireguard/
 bash -x /etc/wireguard/wireguard-(server|client).sh >> /etc/wireguard/wireguard-(server|client).log
 ```
-___
+
+---
 ### Credits
 [Angristan](https://raw.githubusercontent.com/angristan/wireguard-install/master/LICENSE)
-[l-n-s](https://raw.githubusercontent.com/l-n-s/wireguard-install/master/LICENSE) 
+[l-n-s](https://raw.githubusercontent.com/l-n-s/wireguard-install/master/LICENSE)
 
-### License 
+---
+### License
 This project is under the [General Public License](https://raw.githubusercontent.com/complexorganizations/wireguard-install/master/.github/LICENSE)
