@@ -4,6 +4,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/complexorganizations/wireguard-installer-manager)](https://github.com/complexorganizations/wireguard-install/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/complexorganizations/wireguard-installer-manager)](https://github.com/complexorganizations/wireguard-install/graphs/contributors)
 [![GitHub forks](https://img.shields.io/github/forks/complexorganizations/wireguard-installer-manager?style=social)](https://github.com/complexorganizations/wireguard-install/fork)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/complexorganizations/wireguard-manager/ShellCheck)](https://github.com/complexorganizations/wireguard-manager/actions)
 
 ---
 ### What is WireGuard?
